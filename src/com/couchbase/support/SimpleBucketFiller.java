@@ -14,7 +14,7 @@ public class SimpleBucketFiller {
 		String HOSTNAME           = "10.4.2.121";
 		String BUCKETNAME         = "histogramtest";
 		int    NUMDOCUMENTS       = 1000;		// Create 1000 documents
-		int    HIGHEXPIRATION     = 10000;	// 1000000 seconds is about 12 days
+		int    HIGHEXPIRATION     = 1000000;	// 1000000 seconds is about 12 days
 		
 		// The settings above will create 1000 documents which expire in the 
 		// next 0-1,000,000 seconds from now.
