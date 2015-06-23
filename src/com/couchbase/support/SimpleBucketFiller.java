@@ -19,7 +19,7 @@ public class SimpleBucketFiller {
 		// The settings above will create 1000 documents which expire in the 
 		// next 0-1,000,000 seconds from now.
 		
-		String DOCUMENTNAMEPREFIX = "documentT";
+		String DOCUMENTNAMEPREFIX = "document";
 		String jsonDocumentString = "";
 		String documentKey        = "";
 		JsonObject jsonObject     = null;
