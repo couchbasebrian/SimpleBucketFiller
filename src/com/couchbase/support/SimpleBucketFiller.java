@@ -13,8 +13,8 @@ public class SimpleBucketFiller {
 
 		// These control how much informational output is displayed
 		// You can suppress the printing of the generated json docs if you wish
-		boolean	printEachDocument	= false;
-		boolean showYourWork        = false;
+		boolean	printEachDocument	= true;
+		boolean showYourWork        = true;
 		
 		// Please replace these with the values from your cluster and bucket
 		String HOSTNAME           = "192.168.42.101";
@@ -48,7 +48,7 @@ public class SimpleBucketFiller {
 		String jsonDocumentString = "";
 		String documentKey        = "";
 		String randomLetters      = "";
-
+		
 		JsonObject   jsonObject   = null;
 		JsonDocument jsonDocument = null;
 
@@ -60,9 +60,9 @@ public class SimpleBucketFiller {
 		int successfulInsert    = 0;
 		
 		// Keep track of these for successful inserts only
-		int minGeneratedSize    = (MAXDOCSIZE + 1);
-		int maxGeneratedSize    = 0;
-		int cumulativeDocSize   = 0;   // total of all json doc strings
+		int minGeneratedSize    = 100000000;   // an unlikely small size
+		int maxGeneratedSize    = 0;           // an unlikely large size
+		int cumulativeDocSize   = 0;           // sum total of all json doc strings
 		char randomChar			= 0;
 		
 		// Connect to the cluster
@@ -91,7 +91,7 @@ public class SimpleBucketFiller {
 						
 			sizeOfThisDocument = jsonDocumentString.length();
 			
-			if (printEachDocument) { System.out.println(jsonDocumentString); }
+			if (printEachDocument) { System.out.println(jsonDocumentString + " Length: " + sizeOfThisDocument); }
 			
 			// Create the JSON Object from the generated json document string
 			jsonObject = JsonObject.fromJson(jsonDocumentString);
@@ -140,9 +140,7 @@ public class SimpleBucketFiller {
 		System.out.println("Performance was about:                " + docsPerSecond + " docs per second");
 		System.out.println("Total successful doc size was:        " + cumulativeDocSize + " bytes");
 		System.out.println("Generated doc size range was between  " + minGeneratedSize + " and " + maxGeneratedSize + " bytes");
-		
-		
-		
+				
 	}
 
 }
