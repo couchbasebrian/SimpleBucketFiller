@@ -7,6 +7,8 @@ import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentAlreadyExistsException;
 
+// For Couchbase Java Client 2.1.3
+
 public class SimpleBucketFiller {
 
 	public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class SimpleBucketFiller {
 		boolean showYourWork        = true;
 		
 		// Please replace these with the values from your cluster and bucket
-		String HOSTNAME           = "192.168.42.101";
+		String HOSTNAME           = "10.111.110.101";
 		String BUCKETNAME         = "BUCKETNAME";
 		
 		// Number of documents to try to insert
@@ -30,7 +32,7 @@ public class SimpleBucketFiller {
 		// Maximum expiration time from now, in seconds
 		// Only used if randomExpiry is true
 		// 1000000 seconds is about 12 days
-		int    HIGHEXPIRATION     = 60;	
+		int    HIGHEXPIRATION     = 3600;	
 
 		// You can set this to true for random doc sizes or false for more of a static doc
 		boolean randomSizes  = true;
@@ -75,26 +77,6 @@ public class SimpleBucketFiller {
 				
 			// create a document
 			documentKey = DOCUMENTNAMEPREFIX + i;
-			
-			if (randomSizes) {
-				docRandomSize = ((int) (Math.random() * expiryRange)) + MINDOCSIZE;
-								
-				randomLetters = "";
-				for (int x = 0; x < docRandomSize; x++) {
-					randomChar = (char) (((int) (Math.random() * (90 - 65)) + 65));	// a random ascii char between 65 and 90
-					randomLetters = randomLetters + randomChar;
-				}
-				jsonDocumentString = "{  \"randomData\" : \"" + randomLetters + "\", \"name\" : \"" + documentKey +  "\", \"serialNumber\" : " + i + " }";
-			} else {
-				jsonDocumentString = "{  \"body\" : \"This is some document data\", \"name\" : \"" + documentKey + "\", \"serialNumber\" : " + i + " }";
-			}
-						
-			sizeOfThisDocument = jsonDocumentString.length();
-			
-			if (printEachDocument) { System.out.println(jsonDocumentString + " Length: " + sizeOfThisDocument); }
-			
-			// Create the JSON Object from the generated json document string
-			jsonObject = JsonObject.fromJson(jsonDocumentString);
 
 			// Determine docExpiry based on the options
 			if (randomExpiry) {
@@ -103,6 +85,35 @@ public class SimpleBucketFiller {
 			else {
 				docExpiry = 0;
 			}
+
+			if (randomSizes) {
+				docRandomSize = ((int) (Math.random() * expiryRange)) + MINDOCSIZE;
+								
+				randomLetters = "";
+				for (int x = 0; x < docRandomSize; x++) {
+					randomChar = (char) (((int) (Math.random() * (90 - 65)) + 65));	// a random ascii char between 65 and 90
+					randomLetters = randomLetters + randomChar;
+				}
+				jsonDocumentString = "{  \"randomData\" : \"" + randomLetters + "\", \"name\" : \"" + documentKey +  "\", \"serialNumber\" : " + i; 
+			} else {
+				jsonDocumentString = "{  \"body\" : \"This is some document data\", \"name\" : \"" + documentKey + "\", \"serialNumber\" : " + i;
+			}
+			
+			// Add expiry into the JSON, for now - https://issues.couchbase.com/browse/MB-15916
+			if (randomExpiry) {
+				jsonDocumentString = jsonDocumentString + " , \"expiry\" : " + docExpiry;
+			}
+
+			// Close it off
+			jsonDocumentString = jsonDocumentString + " }";
+			
+			sizeOfThisDocument = jsonDocumentString.length();
+			
+			if (printEachDocument) { System.out.println(jsonDocumentString + " Length: " + sizeOfThisDocument); }
+			
+			// Create the JSON Object from the generated json document string
+			jsonObject = JsonObject.fromJson(jsonDocumentString);
+
 			
 			if (showYourWork) {
 				System.out.println("Working on document #" + i + " of " + NUMDOCUMENTS + ". Using expiration of " + docExpiry + " seconds");
