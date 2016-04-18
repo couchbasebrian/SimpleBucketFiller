@@ -8,6 +8,8 @@ package com.couchbase.support;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.document.JsonDocument;
 
 // For Couchbase Java Client 2.1.3
@@ -36,6 +38,22 @@ public class SimpleDocumentGetter {
 
 		// Connect to the cluster
 		Cluster cluster = CouchbaseCluster.create(HOSTNAME);
+		
+		boolean getClusterInfo = true;
+		
+		if (getClusterInfo) {
+			try {
+				// The Admin ( UI login ) credentials go here
+				ClusterInfo ci = getClusterManagerInfo(cluster, "Administrator", "password");
+				
+				System.out.println(ci.raw());
+				System.out.println("Min version is: " + ci.getMinVersion());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		Bucket bucket = cluster.openBucket(BUCKETNAME);	
 
 		long startTime = System.currentTimeMillis();
@@ -78,6 +96,17 @@ public class SimpleDocumentGetter {
 
 	}
 
+	// Added April 18, 2016
+	public static ClusterInfo getClusterManagerInfo(Cluster c, String adminUser, String adminPassword) {
+		
+		ClusterManager cm = c.clusterManager(adminUser, adminPassword);
+		
+		ClusterInfo ci = cm.info();		
+		
+		return ci;
+	}
+	
+	
 }
 
 // EOF
