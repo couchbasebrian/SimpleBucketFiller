@@ -1,6 +1,7 @@
 package com.couchbase.support;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.couchbase.client.deps.io.netty.handler.timeout.TimeoutException;
 import com.couchbase.client.java.Bucket;
@@ -10,7 +11,7 @@ import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentAlreadyExistsException;
 import com.couchbase.client.java.error.DurabilityException;
-// import com.couchbase.support.utils.GenericObjectPrinter;
+import com.couchbase.client.java.util.features.Version;
 
 //  Brian Williams
 //  July 7-8, 2016
@@ -45,20 +46,19 @@ public class SBFConfigurationConsumer {
 			testResult = processConfiguration(eachTestConfig);
 			testResult.print();
 			allResults[configurationCounter] = testResult;
-			if (configurationCounter != numConfigs) {
+			System.out.println("-------- Done with #" + configurationCounter + " out of " + numConfigs + " --------");
+
+			// Don't sleep on the final one
+			if (configurationCounter < (numConfigs-1)) {
 				try {
-					System.out.println("-------- Done with #" + configurationCounter + " Sleeping... --------");
-					Thread.sleep(5000);
+					System.out.println("-------- Sleeping... --------");
+					Thread.sleep(5000); // pause 5 seconds between tests, wait for clean sdk shutdown
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			configurationCounter++;
 		}
-
-		// experimental
-		//GenericObjectPrinter gop = new GenericObjectPrinter(allResults);
-		//gop.print();
 
 		System.out.println("-------- All done with configs --------");
 
@@ -69,7 +69,7 @@ public class SBFConfigurationConsumer {
 
 		SBFTestResults results = new SBFTestResults(config);
 
-		int		expiryRange = config.maxDocSize - config.minDocSize;
+		int		documentSizeRange = config.maxDocSize - config.minDocSize;
 
 		StringBuffer sb           = new StringBuffer();
 		String jsonDocumentString = "";
@@ -86,11 +86,32 @@ public class SBFConfigurationConsumer {
 		Cluster cluster = CouchbaseCluster.create(config.HOSTNAME);
 		Bucket  bucket  = cluster.openBucket(config.BUCKETNAME);	
 
+		// TODO catch any exceptions that occur and set a flag on the Results object
+		// if there is any problem connecting to the cluster or the bucket.
+		
 		System.out.println("I have connected to the cluster and bucket");
 
-		long startTime = System.currentTimeMillis();
+		// See if we can get the cluster nodes version list
+		List<Version> clusterVersionList = null;
+		if ((config.username.length() != 0) && (config.password.length() != 0)) {
+			// We have been given both a user name and a password
+			try {
+				clusterVersionList = cluster.clusterManager(config.username, config.password).info().getAllVersions();
 
+				// Add this information into the test results
+				if (clusterVersionList != null) {
+					for (Version v : clusterVersionList) {
+						results.addVersion(v);
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Could not get additional cluster info using the supplied username and password");
+			}
+		}
+		
 		System.out.println("I will iterate over " + config.NUMDOCUMENTS + " documents");
+
+		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < config.NUMDOCUMENTS; i++) {
 
@@ -113,7 +134,7 @@ public class SBFConfigurationConsumer {
 			sb.setLength(0);
 
 			if (config.randomSizes) {
-				docRandomSize = ((int) (Math.random() * expiryRange)) + config.minDocSize;
+				docRandomSize = ((int) (Math.random() * documentSizeRange)) + config.minDocSize;
 
 				for (int x = 0; x < docRandomSize; x++) {
 					randomChar = (char) (((int) (Math.random() * (90 - 65)) + 65));	// a random ASCII char between 65 and 90
@@ -177,6 +198,8 @@ public class SBFConfigurationConsumer {
 				results.durabilityException++;
 			} catch (TimeoutException tme) {
 				results.timeoutExceptions++;
+			} catch (RuntimeException rte) {
+				results.runtimeExceptions++;
 			} catch (Exception e) {
 				System.out.println(e);
 				results.otherExceptionCount++;
@@ -189,7 +212,7 @@ public class SBFConfigurationConsumer {
 		// Store some final things in the results
 		results.elapsedTime = endTime - startTime;
 		results.docsPerSecond = ((config.NUMDOCUMENTS * 1000)/ results.elapsedTime);
-		results.versionString= bucket.environment().packageNameAndVersion();
+		results.sdkVersionString= bucket.environment().packageNameAndVersion();
 
 		// Clean Up really well
 		bucket.close();

@@ -26,10 +26,8 @@ public class SBFConfiguration {
 	public ReplicateTo replicateTo = ReplicateTo.NONE;
 
 	// Please replace these with the values from your cluster and bucket
-
 	// 10.111.110.101 is 4.1.0
 	// 10.111.111.104 is 4.1.1
-
 	public String HOSTNAME           = "10.111.110.101";
 	public String BUCKETNAME         = "BUCKETNAME";
 
@@ -53,16 +51,28 @@ public class SBFConfiguration {
 	public boolean randomSizes  = true;
 
 	// If randomSizes is true, will create documents that randomly have
-	// a size in this range
-
+	// a size in this range, between minDocSize and maxDocSize
 	// Large documents - 800kb to 1000kb
 	public int	minDocSize	=  800000;
 	public int 	maxDocSize	= 1000000;
 
+	// These two options controls extra output logged to the console
 	public boolean showYourWork = false;
+	public boolean printEachDocument = false;
 
-	public boolean printEachDocument;
-
-}
+	// TODO
+	// Support for connection timeout options such as
+	// .setConnectTimeout()
+	// .setReadTimeout()
+	// .setOpTimeout
+	// .setSoTimeout()
+	// .setObsTimeout()
+	
+	// Optional
+	// For getting extra information from the Cluster / ClusterInfo object
+	public String username = "Administrator";
+	public String password = "";
+	
+} // class SBFConfiguration
 
 // EOF
