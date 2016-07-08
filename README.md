@@ -1,4 +1,8 @@
-# SimpleBucketFiller
+# SBF*
+
+There are some new classes here that represent a new version of the original simple program.  I have taken the original SimpleBucketFiller and refactored it so that there is now a class to represent a test configuration, test results, a factory, and a configuration consumer.  The main, runnable class is SBFConfigurationConsumer.  When it starts up it gets a list of test configurations, SBFConfiguration, from the SBFConfigurationFactory.  Then it iterates over them, performs the test according to the specified options, and records the results in SBFTestResults.
+
+# original SimpleBucketFiller
 
 Utility for inserting documents into a bucket with random expiration times and random sizes.
 
