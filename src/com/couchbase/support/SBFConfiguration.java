@@ -12,7 +12,7 @@ public class SBFConfiguration {
 	SBFConfiguration() {
 		// do something
 	}
-	
+
 	// You may set this to any value you like
 	public String documentNamePrefix = "sbfDocument";
 
@@ -49,7 +49,7 @@ public class SBFConfiguration {
 	public boolean randomSizes  = true;
 
 	// If randomSizes is true, will create documents that randomly have
-	// a size in this range, between minDocSize and maxDocSize
+	// a size in this range, between minDocSize and maxDocSize, which are measured in bytes.
 	// Large documents - 800kb to 1000kb
 	public int	minDocSize	=  800000;
 	public int 	maxDocSize	= 1000000;
@@ -65,12 +65,20 @@ public class SBFConfiguration {
 	// .setOpTimeout
 	// .setSoTimeout()
 	// .setObsTimeout()
-	
+
+	// TODO
+	// Add the ability to read itself from a properties file
+
+	// TODO
+	// Add a static class method with the ability to read a folder full of properties
+	// files and return a list of these instantiated objects, with one object populated
+	// from each properties file
+
 	// Optional
 	// For getting extra information from the Cluster / ClusterInfo object
 	public String username = "Administrator";
 	public String password = "";
-	
+
 } // class SBFConfiguration
 
 // EOF

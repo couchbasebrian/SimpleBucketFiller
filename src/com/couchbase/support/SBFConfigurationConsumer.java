@@ -63,6 +63,8 @@ public class SBFConfigurationConsumer {
 
 		System.out.println("-------- All done with configs --------");
 
+		SBFTestResults.printList(allResults);
+
 	}
 
 	// Given one configuration, run it, and then return the results
@@ -89,7 +91,7 @@ public class SBFConfigurationConsumer {
 
 		// TODO catch any exceptions that occur and set a flag on the Results object
 		// if there is any problem connecting to the cluster or the bucket.
-		
+
 		System.out.println("I have connected to the cluster and bucket");
 
 		// See if we can get the cluster nodes version list
@@ -109,7 +111,7 @@ public class SBFConfigurationConsumer {
 				System.out.println("Could not get additional cluster info using the supplied username and password");
 			}
 		}
-		
+
 		System.out.println("I will iterate over " + config.NUMDOCUMENTS + " documents");
 
 		long startTime = System.currentTimeMillis();
@@ -117,7 +119,7 @@ public class SBFConfigurationConsumer {
 		long t1 = 0, t2 = 0;
 		long latency = 0;
 		long cumulativeTime = 0;
-		
+
 		for (int i = 0; i < config.NUMDOCUMENTS; i++) {
 
 			// create a document
@@ -184,7 +186,7 @@ public class SBFConfigurationConsumer {
 				// 
 
 				t1 = System.currentTimeMillis();
-				
+
 				if (config.upsertMode) {
 					bucket.upsert(jsonDocument, config.persistTo, config.replicateTo);			
 				}
@@ -198,17 +200,16 @@ public class SBFConfigurationConsumer {
 
 				latency = t2 - t1;
 				cumulativeTime += latency;
-				
+
 				System.out.println("The latency for this successful op was " + latency);
-				
+
 				results.successfulInsert++;
 				results.cumulativeDocSize = results.cumulativeDocSize + sizeOfThisDocument;
 				if (sizeOfThisDocument < results.minGeneratedSize) { results.minGeneratedSize = sizeOfThisDocument; }
 				if (sizeOfThisDocument > results.maxGeneratedSize) { results.maxGeneratedSize = sizeOfThisDocument; }
 
 				results.averageLatency = cumulativeTime / results.successfulInsert;
-				
-				
+
 			} catch (DocumentAlreadyExistsException daee) {
 				results.alreadyExistCount++;
 			} catch (DurabilityException dure) {

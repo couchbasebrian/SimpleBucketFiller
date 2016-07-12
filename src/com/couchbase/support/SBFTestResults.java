@@ -33,6 +33,15 @@ public class SBFTestResults {
 	public int runtimeExceptions   = 0;
 	public long averageLatency     = 0;
 
+	public int getTotalExceptions() {
+		return(alreadyExistCount +
+				durabilityException +
+				timeoutExceptions +
+				runtimeExceptions +
+				otherExceptionCount );
+	}
+
+
 	// This typically gets called once for each Version found, 
 	// which is usually one per node.  So we can count the number
 	// nodes and store this in the results.
@@ -43,7 +52,7 @@ public class SBFTestResults {
 		couchbaseVersions.add(v);
 		numberOfNodes++;
 	}
-	
+
 	public String getVersionList() {
 		String rval = "";
 		if (couchbaseVersions != null) {
@@ -77,6 +86,30 @@ public class SBFTestResults {
 		System.out.println("Total size of inserted docs:          " + cumulativeDocSize + " bytes");
 		System.out.println("Generated doc size range was between  " + minGeneratedSize + " and " + maxGeneratedSize + " bytes");
 	} // print() method
+
+	static void printList(SBFTestResults[] resultList) {
+
+		String formatString = "%20s %10s %11s %11d %12d %14d %15d %8d %8d %16d\n";
+
+		System.out.println("Hostname             PersistTo  ReplicateTo Avg Latency Num Attempts Num Successful Docs per second Min size Max size Total exceptions");
+
+		System.out.println("-------------------- ---------- ----------- ----------- ------------ -------------- --------------- -------- -------- ----------------");
+
+		for (SBFTestResults r : resultList) {
+			System.out.printf(formatString, r.configurationUsed.HOSTNAME,
+					r.configurationUsed.persistTo,
+					r.configurationUsed.replicateTo,
+					r.averageLatency,
+					r.configurationUsed.NUMDOCUMENTS,
+					r.successfulInsert,
+					r.docsPerSecond,
+					r.minGeneratedSize,
+					r.maxGeneratedSize,
+					r.getTotalExceptions());
+		}
+
+	}
+
 
 } // SBFTestResults class
 
