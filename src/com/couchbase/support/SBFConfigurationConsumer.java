@@ -14,7 +14,8 @@ import com.couchbase.client.java.error.DurabilityException;
 import com.couchbase.client.java.util.features.Version;
 
 //  Brian Williams
-//  July 7-8, 2016
+//  Created: July 7-8, 2016
+//  Last Updated: July 12, 2016
 
 public class SBFConfigurationConsumer {
 
@@ -113,6 +114,10 @@ public class SBFConfigurationConsumer {
 
 		long startTime = System.currentTimeMillis();
 
+		long t1 = 0, t2 = 0;
+		long latency = 0;
+		long cumulativeTime = 0;
+		
 		for (int i = 0; i < config.NUMDOCUMENTS; i++) {
 
 			// create a document
@@ -178,6 +183,8 @@ public class SBFConfigurationConsumer {
 				// Here is the actual operation
 				// 
 
+				t1 = System.currentTimeMillis();
+				
 				if (config.upsertMode) {
 					bucket.upsert(jsonDocument, config.persistTo, config.replicateTo);			
 				}
@@ -187,11 +194,21 @@ public class SBFConfigurationConsumer {
 				}
 
 				// If we got here, insert was successful.  Do some bookkeeping.
+				t2 = System.currentTimeMillis();
+
+				latency = t2 - t1;
+				cumulativeTime += latency;
+				
+				System.out.println("The latency for this successful op was " + latency);
+				
 				results.successfulInsert++;
 				results.cumulativeDocSize = results.cumulativeDocSize + sizeOfThisDocument;
 				if (sizeOfThisDocument < results.minGeneratedSize) { results.minGeneratedSize = sizeOfThisDocument; }
 				if (sizeOfThisDocument > results.maxGeneratedSize) { results.maxGeneratedSize = sizeOfThisDocument; }
 
+				results.averageLatency = cumulativeTime / results.successfulInsert;
+				
+				
 			} catch (DocumentAlreadyExistsException daee) {
 				results.alreadyExistCount++;
 			} catch (DurabilityException dure) {

@@ -27,7 +27,7 @@ public class SBFConfiguration {
 
 	// Please override these with the values from your cluster and bucket
 	public String HOSTNAME           = "localhost";
-	public String BUCKETNAME         = "BUCKETNAME";
+	public String BUCKETNAME         = "default";
 
 	// Number of documents to try to insert
 	public int    NUMDOCUMENTS       = 20;		

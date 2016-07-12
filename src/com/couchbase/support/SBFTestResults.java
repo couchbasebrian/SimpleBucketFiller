@@ -31,6 +31,7 @@ public class SBFTestResults {
 	public int cumulativeDocSize   = 0;           // sum total of all json doc strings
 	public int timeoutExceptions   = 0;
 	public int runtimeExceptions   = 0;
+	public long averageLatency     = 0;
 
 	// This typically gets called once for each Version found, 
 	// which is usually one per node.  So we can count the number
@@ -72,6 +73,7 @@ public class SBFTestResults {
 		System.out.println("Number of other exceptions:           " + otherExceptionCount);
 		System.out.println("Total run time was:                   " + elapsedTime + " milliseconds");
 		System.out.println("Performance was approximately:        " + docsPerSecond + " docs per second");
+		System.out.println("Average latency for successful ops:   " + averageLatency + " milliseconds");
 		System.out.println("Total size of inserted docs:          " + cumulativeDocSize + " bytes");
 		System.out.println("Generated doc size range was between  " + minGeneratedSize + " and " + maxGeneratedSize + " bytes");
 	} // print() method
