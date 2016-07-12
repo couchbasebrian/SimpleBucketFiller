@@ -25,14 +25,12 @@ public class SBFConfiguration {
 	public PersistTo persistTo     = PersistTo.NONE;
 	public ReplicateTo replicateTo = ReplicateTo.NONE;
 
-	// Please replace these with the values from your cluster and bucket
-	// 10.111.110.101 is 4.1.0
-	// 10.111.111.104 is 4.1.1
-	public String HOSTNAME           = "10.111.110.101";
+	// Please override these with the values from your cluster and bucket
+	public String HOSTNAME           = "localhost";
 	public String BUCKETNAME         = "BUCKETNAME";
 
 	// Number of documents to try to insert
-	public int    NUMDOCUMENTS       = 10;		
+	public int    NUMDOCUMENTS       = 20;		
 
 	// Should I start all over again once I reach NUMDOCUMENTS ?
 	// If true, it will.  Otherwise it will not.

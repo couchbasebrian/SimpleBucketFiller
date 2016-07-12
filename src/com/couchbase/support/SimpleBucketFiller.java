@@ -11,6 +11,7 @@ import com.couchbase.client.java.ReplicateTo;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentAlreadyExistsException;
+import com.couchbase.client.java.error.DurabilityException;
 
 // Tested with Couchbase Java Client 2.1.3, 2.2.5
 
@@ -44,7 +45,7 @@ public class SimpleBucketFiller {
 
 		// Should I start all over again once I reach NUMDOCUMENTS ?
 		// If true, it will.  Otherwise it will not.
-		boolean continuousMode = true;
+		boolean continuousMode = false;
 
 		// You can set this to true if you wish to have randomly set document
 		// expirations, or false if you wish documents to have no expiration
@@ -56,7 +57,7 @@ public class SimpleBucketFiller {
 		int    HIGHEXPIRATION     = 60 * 60 * 24 * 2;	
 
 		// You can set this to true for random doc sizes or false for more of a static doc
-		boolean randomSizes  = true;
+		boolean randomSizes  = false;
 
 		// If randomSizes is true, will create documents that randomly have
 		// a size in this range
@@ -84,6 +85,7 @@ public class SimpleBucketFiller {
 		int docExpiry           = 0;
 		int docRandomSize       = 0;
 		int alreadyExistCount   = 0;
+		int durabilityException = 0;
 		int otherExceptionCount = 0;
 		int successfulInsert    = 0;
 
@@ -97,7 +99,7 @@ public class SimpleBucketFiller {
 
 		// ============================ OK lets get started ============================
 
-		System.out.println("Welome to Simple Bucket Filler");
+		System.out.println("Welcome to Simple Bucket Filler");
 
 		// Connect to the cluster
 		Cluster cluster = CouchbaseCluster.create(HOSTNAME);
@@ -191,7 +193,10 @@ public class SimpleBucketFiller {
 
 				} catch (DocumentAlreadyExistsException daee) {
 					alreadyExistCount++;
+				} catch (DurabilityException dure) {
+					durabilityException++;
 				} catch (Exception e) {
+					System.out.println(e);
 					otherExceptionCount++;
 				}			
 
@@ -202,8 +207,12 @@ public class SimpleBucketFiller {
 
 			long docsPerSecond = ((NUMDOCUMENTS * 1000)/ elapsedTime);
 
+			String versionString = bucket.environment().packageNameAndVersion();
+			System.out.println("SDK version is:                       " + versionString);
+			
 			System.out.println("Done.  Successfully inserted:         " + successfulInsert + " documents.");
 			System.out.println("# of documents that already existed:  " + alreadyExistCount);
+			System.out.println("Number of durability exceptions:      " + durabilityException);
 			System.out.println("Number of other exceptions:           " + otherExceptionCount);
 			System.out.println("Total run time was:                   " + elapsedTime + " millseconds");
 			System.out.println("Performance was about:                " + docsPerSecond + " docs per second");

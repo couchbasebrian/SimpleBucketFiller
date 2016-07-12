@@ -70,7 +70,7 @@ public class SBFTestResults {
 		System.out.println("Number of timeout exceptions:         " + timeoutExceptions);
 		System.out.println("Number of runtime exceptions:         " + runtimeExceptions);
 		System.out.println("Number of other exceptions:           " + otherExceptionCount);
-		System.out.println("Total run time was:                   " + elapsedTime + " millseconds");
+		System.out.println("Total run time was:                   " + elapsedTime + " milliseconds");
 		System.out.println("Performance was approximately:        " + docsPerSecond + " docs per second");
 		System.out.println("Total size of inserted docs:          " + cumulativeDocSize + " bytes");
 		System.out.println("Generated doc size range was between  " + minGeneratedSize + " and " + maxGeneratedSize + " bytes");
